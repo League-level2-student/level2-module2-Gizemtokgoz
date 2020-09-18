@@ -25,7 +25,8 @@ int height = 500;
 int foodX;
 int foodY;
 int direction = UP;
-int eaten;
+int eaten = 0;
+ArrayList<Segment> tail = new ArrayList<Segment>();
 // All the game variables that will be shared by the game methods are here
 //*
 
@@ -40,7 +41,7 @@ int eaten;
 
 void setup() {
 size(500, 500);
-head = new Segment(75, 75);
+head = new Segment(70, 70);
 frameRate(20);
 dropFood();
 }
@@ -75,6 +76,11 @@ void drawSnake() {
   //Draw the head of the snake followed by its tail
   rect(head.x, head.y, 10, 10);
   fill(#4FE066);
+  manageTail();
+  eat();
+  for(int i = 0; i < tail.size(); i++) {
+    rect(tail.get(i).x, tail.get(i).y, 10, 10);
+  }
 }
 
 
@@ -85,13 +91,16 @@ void drawSnake() {
 
 void drawTail() {
   //Draw each segment of the tail 
-
+  for(int i = 0; i < tail.size(); i++) {
+   rect(tail.get(i).x, tail.get(i).y, 10, 10); 
+  }
 }
 
 void manageTail() {
   //After drawing the tail, add a new segment at the "start" of the tail and remove the one at the "end" 
   //This produces the illusion of the snake tail moving.
-  
+  checkTailCollision();
+  drawTail();
 }
 
 void checkTailCollision() {
@@ -108,16 +117,16 @@ void checkTailCollision() {
 
 void keyPressed() {
   //Set the direction of the snake according to the arrow keys pressed
-  if (key == UP) {
+  if (keyCode == UP) {
     direction = UP;
   }
-  if (key == DOWN) {
+  if (keyCode == DOWN) {
     direction = DOWN;
   }
-  if (key == RIGHT) {
+  if (keyCode == RIGHT) {
     direction = RIGHT;
   }
-  if (key == LEFT) {
+  if (keyCode == LEFT) {
     direction = LEFT;
   }
 }
@@ -127,16 +136,20 @@ void move() {
   
   switch(direction) {
   case UP:
-    // move head up here 
+    // move head up here
+    head.y -= 5;
     break;
   case DOWN:
     // move head down here 
+    head.y += 5;
     break;
   case LEFT:
-   // figure it out 
+   // figure it out
+    head.x -= 5;
     break;
   case RIGHT:
-    // mystery code goes here 
+    // mystery code goes here
+    head.x += 5;
     break;
   }
   checkBoundaries();
@@ -144,11 +157,17 @@ void move() {
 
 void checkBoundaries() {
  //If the snake leaves the frame, make it reappear on the other side
- if(head.x < 0 && head.x > 500) {
-   head.x = 50;
+ if(head.x < 0) {
+   head.x = 500;
  }
- if(head.y < 0 && head.y > 500) {
-   head.y = 50;
+ if (head.x > 500) {
+   head.x = 0;
+ }
+ if(head.y < 0) {
+   head.y = 500;
+ }
+ if (head.y > 500) {
+   head.y = 0;
  }
 }
 
@@ -156,5 +175,11 @@ void checkBoundaries() {
 
 void eat() {
   //When the snake eats the food, its tail should grow and more food appear
-
+  if (head.x == foodX && head.y ==foodY) {
+    foodX = ((int)random(45)*10);
+    foodY = ((int)random(45)*10);
+    eaten += 1;
+    rect(foodX, foodY, 10, 10);
+    fill(#E04F52);
+  }
 }
