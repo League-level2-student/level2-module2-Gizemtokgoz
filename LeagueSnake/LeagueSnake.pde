@@ -68,14 +68,14 @@ void draw() {
 
 void drawFood() {
   //Draw the food
-  rect(foodX, foodY, 10, 10);
   fill(#E04F52);
+  rect(foodX, foodY, 10, 10);
 }
 
 void drawSnake() {
   //Draw the head of the snake followed by its tail
-  rect(head.x, head.y, 10, 10);
   fill(#4FE066);
+  rect(head.x, head.y, 10, 10);
   manageTail();
   eat();
   for(int i = 0; i < tail.size(); i++) {
@@ -101,11 +101,20 @@ void manageTail() {
   //This produces the illusion of the snake tail moving.
   checkTailCollision();
   drawTail();
+  
+  tail.add(new Segment(head.x, head.y));
+  tail.remove(0);
 }
 
 void checkTailCollision() {
   //If the snake crosses its own tail, shrink the tail back to one segment
-  
+  for(int j = 0; j < tail.size(); j++) {
+  if(head.x == tail.get(j).x && head.y == tail.get(j).y) {
+    eaten = 1;
+    tail = new ArrayList<Segment>();
+    tail.add(new Segment(head.x, head.y));
+    }
+  }
 }
 
 
@@ -137,19 +146,19 @@ void move() {
   switch(direction) {
   case UP:
     // move head up here
-    head.y -= 5;
+    head.y -= 10;
     break;
   case DOWN:
     // move head down here 
-    head.y += 5;
+    head.y += 10;
     break;
   case LEFT:
    // figure it out
-    head.x -= 5;
+    head.x -= 10;
     break;
   case RIGHT:
     // mystery code goes here
-    head.x += 5;
+    head.x += 10;
     break;
   }
   checkBoundaries();
@@ -176,10 +185,8 @@ void checkBoundaries() {
 void eat() {
   //When the snake eats the food, its tail should grow and more food appear
   if (head.x == foodX && head.y ==foodY) {
-    foodX = ((int)random(45)*10);
-    foodY = ((int)random(45)*10);
-    eaten += 1;
-    rect(foodX, foodY, 10, 10);
-    fill(#E04F52);
+    dropFood();
+    eaten += 1;    
+    tail.add(new Segment(head.x, head.y));
+    }
   }
-}
